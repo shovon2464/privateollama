@@ -61,6 +61,7 @@ class ClassifyNaturesView(View):
             start_index = response.find('{') 
             end_index = response.rfind('}')+1
             response = response[start_index:end_index]
+            print(response)
             response = response.json()
             return JsonResponse(response,safe=False)
 
