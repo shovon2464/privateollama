@@ -26,7 +26,7 @@ class ClassifyNaturesView(View):
     #using privateollma
     def post(self, request):
         try:
-            prompt = request.POST.get('document')
+            content = request.POST.get('document')
             max_seq_length = 2248 # Choose any! We auto support RoPE Scaling internally!
             dtype = None # None for auto detection. Float16 for Tesla T4, V100, Bfloat16 for Ampere+
             load_in_4bit = True # Use 4bit quantization to reduce memory usage. Can be False.
@@ -48,7 +48,19 @@ class ClassifyNaturesView(View):
 
             ### Response:
             {}"""
-            response = {"message":"hi"}
+            
+            inputs = tokenizer(
+            [
+                alpaca_prompt.format(instruction,content,"")
+            ], return_tensors = "pt").to("cuda")
+
+            outputs = model.generate(**inputs, max_new_tokens = 64, use_cache = True)
+            response = tokenizer.batch_decode(outputs)
+            response = response[0].split("###")
+            response = response[3]
+            start_index = response.find('{') 
+            end_index = response.rfind('}')+1
+            response = response[start_index:end_index]
             response = response.json()
             return JsonResponse(response,safe=False)
 
