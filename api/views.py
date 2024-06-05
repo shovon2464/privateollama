@@ -30,10 +30,6 @@ alpaca_prompt = """Below is an instruction that describes a task, paired with an
 
 class IsActiveView(APIView):
     def get(self, request):
-        os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
-        os.environ["CUDA_VISIBLE_DEVICES"]="3"
-        device = cuda.get_current_device()
-        print(device)
         data = {"message": "I Am Active, I Am Private Ollama!"}
         return Response(data, status=status.HTTP_200_OK)
     
@@ -66,9 +62,7 @@ class ClassifyNaturesView(View):
 
             outputs = model.generate(**inputs, max_new_tokens = 64, use_cache = True)
             response = tokenizer.batch_decode(outputs)
-            device = cuda.get_current_device()
-            print(device)
-            device.reset()
+            torch.cuda.empty_cache()
             response = response[0].split("###")
             response = response[3]
             start_index = response.find('{') 
