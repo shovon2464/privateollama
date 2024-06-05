@@ -41,9 +41,8 @@ class ClassifyNaturesView(View):
             from numba import cuda
             # Create your views here.
             import os
-            import gc
             os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
-            os.environ["CUDA_VISIBLE_DEVICES"]="1"
+            os.environ["CUDA_VISIBLE_DEVICES"]="0"
             from unsloth import FastLanguageModel
             max_seq_length = 9000 # Choose any! We auto support RoPE Scaling internally!
             dtype = None # None for auto detection. Float16 for Tesla T4, V100, Bfloat16 for Ampere+
@@ -63,8 +62,6 @@ class ClassifyNaturesView(View):
 
             outputs = model.generate(**inputs, max_new_tokens = 64, use_cache = True)
             response = tokenizer.batch_decode(outputs)
-            torch.cuda.empty_cache()
-            gc.collect() 
             device = cuda.get_current_device()
             device.reset()
             response = response[0].split("###")
