@@ -40,7 +40,7 @@ class ClassifyNaturesView(View):
         try:
             from unsloth import FastLanguageModel
             import torch
-            device = 'cuda:3' if torch.cuda.is_available() else 'cpu'
+            device = torch.device('cuda:3')
             max_seq_length = 9000 # Choose any! We auto support RoPE Scaling internally!
             dtype = None # None for auto detection. Float16 for Tesla T4, V100, Bfloat16 for Ampere+
             load_in_4bit = True # Use 4bit quantization to reduce memory usage. Can be False.
@@ -59,7 +59,6 @@ class ClassifyNaturesView(View):
 
             outputs = model.generate(**inputs, max_new_tokens = 64, use_cache = True)
             response = tokenizer.batch_decode(outputs)
-            device = cuda.get_current_device()
             print(device)
             device.reset()
             response = response[0].split("###")
