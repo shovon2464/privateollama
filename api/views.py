@@ -59,6 +59,8 @@ class ClassifyNaturesView(View):
 
             outputs = model.generate(**inputs, max_new_tokens = 64, use_cache = True)
             response = tokenizer.batch_decode(outputs)
+            device = cuda.get_current_device()
+            print(device)
             device.reset()
             response = response[0].split("###")
             response = response[3]
