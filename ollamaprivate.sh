@@ -1,1 +1,1 @@
-python manage.py runserver 192.168.0.61:11000
+python manage.py runserver 192.168.1.113:11000
