@@ -15,7 +15,6 @@ from numba import cuda
 
  
 
-
 alpaca_prompt = """Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
 
 ### Instruction:
@@ -39,6 +38,7 @@ class ClassifyNaturesView(View):
     #using privateollma
     def post(self, request):
         try:
+            device = 'cuda:3' if torch.cuda.is_available() else 'cpu'
             from unsloth import FastLanguageModel
             import torch
             max_seq_length = 9000 # Choose any! We auto support RoPE Scaling internally!
