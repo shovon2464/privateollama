@@ -9,9 +9,6 @@ from django.utils.decorators import method_decorator
 from django.views import View
 import requests
 import json
-from numba import cuda
-# Create your views here.
-import os
 
 
 
@@ -41,6 +38,10 @@ class ClassifyNaturesView(View):
     def post(self, request):
         try:
             import torch
+            from numba import cuda
+            # Create your views here.
+            import os
+            import gc
             os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
             os.environ["CUDA_VISIBLE_DEVICES"]="3"
             from unsloth import FastLanguageModel
@@ -63,6 +64,7 @@ class ClassifyNaturesView(View):
             outputs = model.generate(**inputs, max_new_tokens = 64, use_cache = True)
             response = tokenizer.batch_decode(outputs)
             torch.cuda.empty_cache()
+            gc.collect()
             response = response[0].split("###")
             response = response[3]
             start_index = response.find('{') 
